@@ -135,7 +135,7 @@ export function TableOfContents({ articles, isLoading, onEditArticle, onDeleteAr
                 <TableRow key={article.id} className="hover:bg-gray-50">
                   <TableCell className="font-medium">
                     <div 
-                      className="cursor-pointer hover:text-blue-600 truncate max-w-[200px]"
+                      className="cursor-pointer hover:text-blue-600"
                       onClick={() => onEditArticle(article)}
                       title={article.title}
                     >

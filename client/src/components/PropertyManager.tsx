@@ -88,6 +88,14 @@ export function PropertyManager({ properties, onChange }: PropertyManagerProps) 
     }, 100);
   };
 
+  // Get dynamic placeholder for property value based on property name
+  const getValuePlaceholder = () => {
+    if (newPropertyName.toLowerCase().includes('date')) {
+      return 'YYYY-MM-DD HH:MM:SS (time optional)';
+    }
+    return 'Enter value...';
+  };
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       addProperty();
@@ -178,7 +186,7 @@ export function PropertyManager({ properties, onChange }: PropertyManagerProps) 
                   value={newPropertyValue}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewPropertyValue(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Enter value..."
+                  placeholder={getValuePlaceholder()}
                   className="mt-1"
                 />
               </div>
