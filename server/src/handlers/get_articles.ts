@@ -5,59 +5,34 @@ import { eq } from 'drizzle-orm';
 
 export const getArticles = async (): Promise<ArticleWithProperties[]> => {
   try {
-    // Query all articles with their properties using drizzle relations
-    const results = await db
-      .select({
-        // Article fields
-        id: articlesTable.id,
-        title: articlesTable.title,
-        content: articlesTable.content,
-        created_at: articlesTable.created_at,
-        updated_at: articlesTable.updated_at,
-        // Property fields (will be null if no properties exist)
-        property_id: articlePropertiesTable.id,
-        property_name: articlePropertiesTable.property_name,
-        property_value: articlePropertiesTable.property_value,
-      })
+    // Fetch all articles
+    const articles = await db.select()
       .from(articlesTable)
-      .leftJoin(
-        articlePropertiesTable,
-        eq(articlesTable.id, articlePropertiesTable.article_id)
-      )
+      .orderBy(articlesTable.updated_at)
       .execute();
 
-    // Group the results by article ID to combine properties
-    const articlesMap = new Map<number, ArticleWithProperties>();
+    if (articles.length === 0) {
+      return [];
+    }
 
-    results.forEach((row) => {
-      const articleId = row.id;
-      
-      if (!articlesMap.has(articleId)) {
-        // Create new article entry
-        articlesMap.set(articleId, {
-          id: row.id,
-          title: row.title,
-          content: row.content,
-          created_at: row.created_at,
-          updated_at: row.updated_at,
-          properties: [],
-        });
-      }
+    // Fetch properties for all articles
+    const articleIds = articles.map(article => article.id);
+    const properties = await db.select()
+      .from(articlePropertiesTable)
+      .execute();
 
-      // Add property if it exists
-      if (row.property_id && row.property_name && row.property_value !== null) {
-        const article = articlesMap.get(articleId)!;
-        article.properties.push({
-          property_name: row.property_name,
-          property_value: row.property_value,
-        });
-      }
-    });
-
-    // Convert map to array and return
-    return Array.from(articlesMap.values());
+    // Combine articles with their properties
+    return articles.map(article => ({
+      ...article,
+      properties: properties
+        .filter(prop => prop.article_id === article.id)
+        .map(prop => ({
+          property_name: prop.property_name,
+          property_value: prop.property_value
+        }))
+    }));
   } catch (error) {
-    console.error('Failed to fetch articles:', error);
+    console.error('Get articles failed:', error);
     throw error;
   }
 };

@@ -146,29 +146,6 @@ export function PropertyManager({ properties, onChange }: PropertyManagerProps) 
         </div>
       )}
 
-      {/* Quick Preset Buttons */}
-      {properties.length === 0 && (
-        <div className="space-y-3">
-          <Label className="text-sm font-medium text-gray-700">
-            🚀 Quick Add Common Properties:
-          </Label>
-          <div className="flex flex-wrap gap-2">
-            {propertyPresets.map((preset) => (
-              <Button
-                key={preset.name}
-                variant="outline"
-                size="sm"
-                onClick={() => selectPreset(preset.name)}
-                className="text-xs border-dashed hover:border-solid"
-              >
-                {preset.icon && <preset.icon className="h-3 w-3 mr-1" />}
-                {preset.name}
-              </Button>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Add New Property Form */}
       <Card className="border-dashed border-2 border-gray-300 hover:border-gray-400 transition-colors">
         <CardContent className="pt-4">
@@ -218,6 +195,27 @@ export function PropertyManager({ properties, onChange }: PropertyManagerProps) 
           </div>
         </CardContent>
       </Card>
+
+      {/* Quick Preset Buttons - Always Displayed */}
+      <div className="space-y-3">
+        <Label className="text-sm font-medium text-gray-700">
+          🚀 Quick Add Common Properties:
+        </Label>
+        <div className="flex flex-wrap gap-2">
+          {propertyPresets.map((preset) => (
+            <Button
+              key={preset.name}
+              variant="outline"
+              size="sm"
+              onClick={() => selectPreset(preset.name)}
+              className="text-xs border-dashed hover:border-solid"
+            >
+              {preset.icon && <preset.icon className="h-3 w-3 mr-1" />}
+              {preset.name}
+            </Button>
+          ))}
+        </div>
+      </div>
 
       {/* Property Count */}
       {properties.length > 0 && (

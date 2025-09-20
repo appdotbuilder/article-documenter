@@ -5,36 +5,30 @@ import { eq } from 'drizzle-orm';
 
 export const getArticleById = async (id: number): Promise<ArticleWithProperties | null> => {
   try {
-    // Query article with its properties using a join
-    const results = await db.select()
+    // Fetch article
+    const articles = await db.select()
       .from(articlesTable)
-      .leftJoin(articlePropertiesTable, eq(articlePropertiesTable.article_id, articlesTable.id))
       .where(eq(articlesTable.id, id))
       .execute();
 
-    // If no results, article doesn't exist
-    if (results.length === 0) {
+    if (articles.length === 0) {
       return null;
     }
 
-    // Transform the joined results into ArticleWithProperties format
-    const article = results[0].articles;
-    
-    // Collect all properties, filtering out null properties (from left join)
-    const properties = results
-      .filter(result => result.article_properties !== null)
-      .map(result => ({
-        property_name: result.article_properties!.property_name,
-        property_value: result.article_properties!.property_value,
-      }));
+    const article = articles[0];
+
+    // Fetch properties for the article
+    const properties = await db.select()
+      .from(articlePropertiesTable)
+      .where(eq(articlePropertiesTable.article_id, id))
+      .execute();
 
     return {
-      id: article.id,
-      title: article.title,
-      content: article.content,
-      created_at: article.created_at,
-      updated_at: article.updated_at,
-      properties: properties,
+      ...article,
+      properties: properties.map(prop => ({
+        property_name: prop.property_name,
+        property_value: prop.property_value
+      }))
     };
   } catch (error) {
     console.error('Get article by ID failed:', error);

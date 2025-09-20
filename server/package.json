@@ -10,10 +10,12 @@
   },
   "dependencies": {
     "@trpc/server": "npm:@trpc/server@next",
+    "@types/puppeteer": "^7.0.4",
     "cors": "2.8.5",
     "dotenv": "16.4.7",
     "drizzle-orm": "0.40.0",
     "pg": "8.14.0",
+    "puppeteer": "^24.22.0",
     "superjson": "2.2.2",
     "zod": "3.24.2"
   },
